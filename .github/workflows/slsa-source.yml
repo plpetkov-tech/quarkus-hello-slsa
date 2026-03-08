@@ -1,0 +1,17 @@
+name: SLSA Source
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+permissions: {}
+
+jobs:
+  source-attestation:
+    permissions:
+      contents: write    # store attestation in the repo
+      id-token: write    # OIDC token for Sigstore keyless signing
+    uses: slsa-framework/source-actions/.github/workflows/compute_slsa_source.yml@main
+    with:
+      allow-merge-commits: true
