@@ -1,0 +1,65 @@
+{
+    id: supply-chain-verification
+
+    meta: {
+        runtime: "cel@v0"
+        description: "Release verification policy — checks SBOM and vulnerability scan"
+        version: 1
+        enforce: "true"
+    }
+
+    policies: [
+        {
+            id: "sbom-present"
+            meta: {
+                description: "A CycloneDX SBOM must be present"
+                runtime: "cel@v0"
+                assert_mode: "AND"
+                version: 1
+                enforce: "true"
+            }
+            identities: []
+            tenets: [
+                {
+                    runtime: "cel@v0"
+                    code: "size(predicates) > 0"
+                    predicates: {
+                        types: ["https://cyclonedx.org/bom/v1.6"]
+                    }
+                    assessment: {
+                        message: "SBOM attestation found"
+                    }
+                    error: {
+                        message: "No SBOM attestation found — run syft or cyclonedx-maven-plugin"
+                    }
+                }
+            ]
+        }
+        {
+            id: "vuln-scan-present"
+            meta: {
+                description: "A vulnerability scan report must be present"
+                runtime: "cel@v0"
+                assert_mode: "AND"
+                version: 1
+                enforce: "true"
+            }
+            identities: []
+            tenets: [
+                {
+                    runtime: "cel@v0"
+                    code: "size(predicates) > 0"
+                    predicates: {
+                        types: ["https://trivy.dev/report"]
+                    }
+                    assessment: {
+                        message: "Vulnerability scan attestation found"
+                    }
+                    error: {
+                        message: "No vulnerability scan attestation — run trivy"
+                    }
+                }
+            ]
+        }
+    ]
+}
